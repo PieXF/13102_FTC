@@ -1,0 +1,113 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+@Disabled
+public class MyFIRSTJavaOpMode extends LinearOpMode {
+    private DcMotor frontRight;
+    private DcMotor frontLeft;
+    private DcMotor backRight;
+    private DcMotor backLeft;
+
+    @Override
+    public void runOpMode() {
+        // sets up all the mecanum wheels
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        // run until the end of the match (driver presses STOP)
+
+        double tgtPower = 0;
+        while (opModeIsActive()) {
+            // starting movement
+            if (this.gamepad1.left_stick_y < -0.1) {
+                goForward(this.gamepad1.left_stick_y);
+            } else if (this.gamepad1.left_stick_y > 0.1) {//back
+                goBackward(-this.gamepad1.left_stick_y);
+            } else if (this.gamepad1.left_stick_x < -0.1) {
+                strafeRight(this.gamepad1.left_stick_x);
+            } else if (this.gamepad1.left_stick_x > 0.1) {
+                strafeLeft(this.gamepad1.left_stick_x);
+            } else {
+                stopWheels();
+            }
+            // controlling the right joystick, for turning purposes
+
+            if (gamepad1.right_stick_x > 0.1) {
+                turnRight(tgtPower);
+            } else if (gamepad1.right_stick_x < -0.1) {
+                turnLeft(tgtPower);
+            }
+
+            telemetry.addData("Target Power", tgtPower);
+            telemetry.addData("Motor Power", frontRight.getPower());
+            telemetry.addData("Motor Power", frontLeft.getPower());
+            telemetry.addData("Motor Power", backRight.getPower());
+            telemetry.addData("Motor Power", backLeft.getPower());
+
+            telemetry.addData("Status", "Running");
+            telemetry.update();
+        }
+
+
+    }
+
+    // movement methods
+    public void goForward(double tgtPower) {
+        frontRight.setPower(-tgtPower);
+        frontLeft.setPower(tgtPower);
+        backRight.setPower(-tgtPower);
+        backLeft.setPower(tgtPower);
+    }
+
+    public void goBackward(double tgtPower) {
+        frontRight.setPower(tgtPower);
+        frontLeft.setPower(-tgtPower);
+        backRight.setPower(tgtPower);
+        backLeft.setPower(-tgtPower);
+    }
+
+    public void stopWheels() {
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
+    }
+
+    public void strafeRight(double tgtPower) {
+        frontRight.setPower(tgtPower);
+        frontLeft.setPower(-tgtPower);
+        backRight.setPower(-tgtPower);
+        backLeft.setPower(tgtPower);
+    }
+
+    public void strafeLeft(double tgtPower) {
+        frontRight.setPower(-tgtPower);
+        frontLeft.setPower(tgtPower);
+        backRight.setPower(tgtPower);
+        backLeft.setPower(-tgtPower);
+    }
+
+    public void turnRight(double tgtPower) {
+        frontRight.setPower(tgtPower);
+        frontLeft.setPower(tgtPower);
+        backRight.setPower(-tgtPower);
+        backLeft.setPower(-tgtPower);
+    }
+
+    public void turnLeft(double tgtPower) {
+        frontRight.setPower(-tgtPower);
+        frontLeft.setPower(-tgtPower);
+        backRight.setPower(tgtPower);
+        backLeft.setPower(tgtPower);
+    }
+}
+
